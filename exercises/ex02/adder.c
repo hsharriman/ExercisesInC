@@ -1,5 +1,8 @@
-/*
+/* Asks user to input integers, adds them up and prints the
+result.
+
 * Author: Hwei-Shin Harriman
+* License: MIT license
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,6 +10,15 @@
 
 #define ARRAYLEN 10
 
+/*Prompts user to input integer, reads the string and converts to
+int, adds to array.
+* Returns index when user inputs ^D
+* Throws errors if bad input, or array length exceeded.
+*
+* array: pointer to array to store integers
+* buff: max length of single entry
+* index: number of entries inputted by user
+*/
 int readInput(int * array, int buff){
   int index = 0;
   while (1){
@@ -20,7 +32,7 @@ int readInput(int * array, int buff){
       return index;
     }
     //If too many characters were entered at once
-    if (strlen(input) >= buff) {
+    if (input[strlen(temp)-1] != '\n') {
       fprintf(stderr, "Entry exceeds %i digits\n", buff-1);
       exit(EXIT_FAILURE);
     }
@@ -29,6 +41,12 @@ int readInput(int * array, int buff){
       fprintf(stderr, "Entered too many numbers to fit in the array\n");
       exit(EXIT_FAILURE);
     }
+    //If user entered 0 or something other than an integer
+    if (atoi(temp) == 0){
+      fprintf(stderr, "bad input, did not enter an integer\n");
+      exit(EXIT_FAILURE);
+    }
+
     //convert input to an integer and increment
     array[index] = atoi(temp);
     index++;
@@ -49,13 +67,20 @@ int calcSum(int * array, int size){
   return sum;
 }
 
+/*Creates array to store user inputted integers, adds them up,
+prints the total when user presses ^D.
+
+inputs: array with ARRAYLEN possible entries
+insize: number of entries the user inputted
+sum: total sum of user-inputted numbers
+*/
 int main() {
   int buff = 11;
   int inputs[ARRAYLEN];
 
-  int insize = readInput(&inputs, buff);
-  int sum = calcSum(&inputs, insize);
+  int insize = readInput(inputs, buff);
+  int sum = calcSum(inputs, insize);
 
-  puts("The sum of the number entered is: %i\n", sum);
+  printf("The sum of the number entered is: %i\n", sum);
   return 0;
 }
