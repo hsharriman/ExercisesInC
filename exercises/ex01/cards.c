@@ -46,9 +46,7 @@ void userOutput(char *card_name){
 int checkType(char *card_name){
   int val = 0;
   switch(card_name[0]) {
-    case 'K':
-    case 'Q':
-    case 'J':
+    case 'K': case 'Q': case 'J':
       val = 10;
       break;
     case 'A':

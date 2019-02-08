@@ -13,13 +13,19 @@ int var1;
 int main ()
 {
     int var2 = 5;
-    void *p = malloc(128);
+    int var3 = 10;
+    void *p = malloc(256);
+    void *pp = malloc(256);
+    void *x = malloc(2);
+    void *xx = malloc(30);
     char *s = "Hello, World";
 
     printf ("Address of main is %p\n", main);
     printf ("Address of var1 is %p\n", &var1);
     printf ("Address of var2 is %p\n", &var2);
-    printf ("p points to %p\n", p);
+    printf ("Address of var3 is %p\n", &var3);
+    printf ("p points to %p\n", x);
+    printf ("pp points to %p\n", xx);
     printf ("s points to %p\n", s);
 
     return 0;
