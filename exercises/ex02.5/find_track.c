@@ -1,6 +1,8 @@
-/* Example code for Exercises in C.
+/* Returns name of song(s) from list of tracks that matches a pattern
+or phrase that the user enters.
 
 Modified version of an example from Chapter 2.5 of Head First C.
+Hwei-Shin Harriman
 
 */
 
