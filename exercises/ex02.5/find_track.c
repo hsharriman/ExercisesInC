@@ -34,8 +34,10 @@ void find_track(char search_for[])
 }
 
 // Finds all tracks that match the given pattern.
+//pattern: the pattern to be searched
+// szof: the length of pattern
 //
-// Prints track number and title.
+// Prints track number and title. Throws error if match fails
 void find_track_regex(char pattern[], int szof)
 {
     char * regexString = pattern;
@@ -70,6 +72,9 @@ void rstrip(char s[])
     }
 }
 
+/* Prompts user for input, searches list of songs for match.
+  Prints song title(s) if any matches are found.
+*/
 int main (int argc, char *argv[])
 {
     char search_for[80];
