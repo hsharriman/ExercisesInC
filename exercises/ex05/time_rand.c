@@ -65,8 +65,8 @@ main(int argc, char *argv[])
     time = time_func(iters, dummy2);
     printf("%f ms \t dummy2\n", time);
 
-    time = time_func(iters, random_float);
-    printf("%f ms \t random_float\n", time);
+    time = time_func(iters, random_double);
+    printf("%f ms \t random_double\n", time);
 
     time = time_func(iters, my_random_float);
     printf("%f ms \t my_random_float\n", time);
@@ -74,6 +74,17 @@ main(int argc, char *argv[])
     time = time_func(iters, my_random_float2);
     printf("%f ms \t my_random_float2\n", time);
 
+    time = time_func(iters, my_random_double);
+    printf("%f ms \t my_random_double\n", time);
+
     time = time_func(iters, random_float);
     printf("%f ms \t random_float\n", time);
 }
+/*
+4. The dummy tests are the fastest. random_float is the fastest at 792 ms,
+while my_random_float is 794 ms (very minor differences) and my_random_float2
+is the slowest a 1729 ms.
+
+5. the dummy tests are still the fastes, but random_double is faster than
+my_random_double (819 ms to 2181 ms). 
+*/

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+//All string functions have the DESTINATION FIRST
 char *strfilter1(char *string, char *letters) {
     char buffer[strlen(string)+1];
     int j = 0;
@@ -46,22 +46,25 @@ char *strfilter3(char *string, char *letters) {
             buffer[j++] = string[i];
         }
     }
-    return buffer;
+    buffer[j+1] = '\0';
+    char * res = (char *)malloc(j+1);
+    strcpy(res, buffer);
+    return res;
 }
 
 char *strfilter4(char *string, char *letters) {
     char buffer[100];
     char c;
 
-    while (c = *string++) {
+    while (c = *(string++)) {
         char *ptr = strchr(letters, c);
         if (ptr) {
-            strcat(buffer, c);
+            strcat(buffer, c);  //if you want to use it you need to have 2 null terminated strings;
         }
     }
     int length = sizeof(buffer);
-    char *res = (char *) malloc (length * sizeof(char));
-    strcpy(buffer, res);
+    char *res = (char *) malloc (length);
+    strcpy(res, buffer);
     return res;
 }
 
