@@ -34,7 +34,7 @@ returns: new array, caller must free
 double * get_int_part(double* arr, int size){
   double *res = (double*)malloc(size);
   for (int i=0; i<size; i++){
-    modf(arr[i], res+i);
+    modf(arr[i], res+i);  //could also say &res[s]
     printf("i = %i, %f, address %p\n", i, *(res+i), res+i);
   }
   return res;
@@ -66,11 +66,11 @@ returns: new array, caller must free
 double * get_both_parts(double* arr, int size, double** p){
   printf("size = %d\n", size);
   double *res = (double*)malloc(size);
-  // double * fracs = (double*)malloc(size);
+  double * fracs = (double*)malloc(size);
   for (int i=0; i<size; i++){
-    **(p++) = modf(arr[i], res+i);
+    fracs[i] = modf(arr[i], res+i);
   }
-  // *p = fracs;
+  *p = fracs;
   return res;
 }
 
