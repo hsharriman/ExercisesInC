@@ -131,7 +131,6 @@ int main() {
     print_list(list);
 
     push(list, retval+10);
-    // push(list, 10);
     print_list(list);
 
     remove_by_value(list, 3);
