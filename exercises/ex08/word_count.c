@@ -1,7 +1,6 @@
-/*1.
+/*Create a histogram of words that appear in a text file.
 
-
-
+Author: Hwei-Shin Harriman
 */
 #include <stdlib.h>
 #include <stdio.h>
@@ -10,10 +9,14 @@
 #include <errno.h>
 
 #define BUFFER 1024
+//Helper function to print the results of the program
 void print_results(gpointer key, gpointer value, gpointer usrdata){
   printf(usrdata, key,  GPOINTER_TO_INT(value));
 }
 
+/*Looks up value in hash table, if exists +1, if not in table, adds to
+table
+*/
 void update_histogram(GHashTable* hash, char* input){
   gpointer res = g_hash_table_lookup(hash, input);
   if (res==NULL){
@@ -27,19 +30,24 @@ int read(GHashTable* hash, char* input){
   int c;
   FILE *inFile;
   char word[BUFFER];
+  unsigned int line = 0U;
   unsigned int word_index = 0U;
-  inFile =fopen(input, "r");
+  // inFile =fopen(input, "r");
 
-  if (inFile == 0){
+  if ((inFile = fopen(input, "r"))== 0){
     fprintf(stderr, "Cannot open file\n");
     return EXIT_FAILURE;
   } else {
     int found_word = 0;
+
+    //scan file for words
     while ((c=fgetc(inFile)) != EOF){
       if (line == BUFFER){
         fprintf(stderr, "line is too long, increase BUFFER_MAX_LENGTH");
         return EXIT_FAILURE;
-      } else if (c == '\n'){
+      }
+      //If reach end of a line, reset the counters and end the word
+      else if (c == '\n'){
         if (found_word){
           word[word_index] = '\0';
           word_index = 0U;
@@ -48,6 +56,8 @@ int read(GHashTable* hash, char* input){
         line = 0U;
         continue;
       }
+      //If find a char that is not a letter, reset counters and end
+      //the current word
       if (!isalpha(c)){
         if (found_word){
           word[word_index] = '\0';
@@ -56,9 +66,9 @@ int read(GHashTable* hash, char* input){
           update_histogram(hash, strdup(word));
         }
       }
+      //Assume that a word is being looked at, add it to the word
       else {
         found_word = 1;
-        c = tolower(c);
         word[word_index++] =(char)c;
       }
       line++;
