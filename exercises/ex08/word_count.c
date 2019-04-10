@@ -1,5 +1,9 @@
 /*Create a histogram of words that appear in a text file.
 
+Run with:
+$ make word_count
+$ ./word_count pride.txt
+
 Author: Hwei-Shin Harriman
 */
 #include <stdlib.h>
@@ -7,6 +11,7 @@ Author: Hwei-Shin Harriman
 #include <string.h>
 #include <glib.h>
 #include <errno.h>
+#include <ctype.h>
 
 #define BUFFER 1024
 //Helper function to print the results of the program
@@ -16,23 +21,30 @@ void print_results(gpointer key, gpointer value, gpointer usrdata){
 
 /*Looks up value in hash table, if exists +1, if not in table, adds to
 table
+
+hash: ptr to GHashTable object
+input: ptr to word to be looked up in hash table
 */
 void update_histogram(GHashTable* hash, char* input){
   gpointer res = g_hash_table_lookup(hash, input);
   if (res==NULL){
     g_hash_table_insert(hash, input, GINT_TO_POINTER(1));
   } else{
-    g_hash_table_replace(hash, input, GPOINTER_TO_INT(res) + 1);
+    g_hash_table_replace(hash, input, GINT_TO_POINTER(res) + 1);
   }
 }
 
+/* Scans the input file and counts up occurrences of each word
+
+hash: ptr to GHashTable object
+input: ptr to string with filename to be analyzed
+*/
 int read(GHashTable* hash, char* input){
   int c;
   FILE *inFile;
   char word[BUFFER];
   unsigned int line = 0U;
   unsigned int word_index = 0U;
-  // inFile =fopen(input, "r");
 
   if ((inFile = fopen(input, "r"))== 0){
     fprintf(stderr, "Cannot open file\n");
@@ -69,7 +81,7 @@ int read(GHashTable* hash, char* input){
       //Assume that a word is being looked at, add it to the word
       else {
         found_word = 1;
-        word[word_index++] =(char)c;
+        word[word_index++] =(char)(tolower(c));
       }
       line++;
     }
