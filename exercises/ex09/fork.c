@@ -18,6 +18,7 @@ License: MIT License https://opensource.org/licenses/MIT
 // errno is an external global variable that contains
 // error information
 extern int errno;
+int testGlob = 1;
 
 
 // get_seconds returns the number of seconds since the
@@ -33,7 +34,6 @@ double get_seconds() {
 void child_code(int i)
 {
     sleep(i);
-    printf("Hello from child %d.\n", i);
 }
 
 // main takes two parameters: argc is the number of command-line
@@ -45,6 +45,9 @@ int main(int argc, char *argv[])
     pid_t pid;
     double start, stop;
     int i, num_children;
+    int* testHeap = malloc(sizeof(int));
+    *testHeap = 2;
+    int testStack = 20;
 
     // the first command-line argument is the name of the executable.
     // if there is a second, it is the number of children to create.
@@ -60,7 +63,7 @@ int main(int argc, char *argv[])
     for (i=0; i<num_children; i++) {
 
         // create a child process
-        printf("Creating child %d.\n", i);
+        // printf("Creating child %d.\n", i);
         pid = fork();
 
         /* check for an error */
@@ -72,13 +75,22 @@ int main(int argc, char *argv[])
 
         /* see if we're the parent or the child */
         if (pid == 0) {
+          //If we get here, then this is the child process
+            testStack = 40 + i;
+            printf("for child %d, testStack = %d, stack addr %p.\n", i, testStack, &testStack);
+
+            *testHeap = 10 + i;
+            printf("for child %d, value of testHeap = %d, address = %p\n", i, *testHeap, testHeap);
+
+            testGlob = 100 + i;
+            printf("for child %d, value of testGlob = %d, address = %p\n", i, testGlob, &testGlob);
             child_code(i);
             exit(i);
         }
     }
 
     /* parent continues */
-    printf("Hello from the parent.\n");
+    // printf("Hello from the parent.\n");
 
     for (i=0; i<num_children; i++) {
         pid = wait(&status);
@@ -93,6 +105,9 @@ int main(int argc, char *argv[])
         status = WEXITSTATUS(status);
         printf("Child %d exited with error code %d.\n", pid, status);
     }
+    printf("for parent, testStack = %d, address = %p\n", testStack, &testStack);
+    printf("for parent, testHeap = %d, address = %p\n", *testHeap, testHeap);
+    printf("for parent, testGlob = %d, address = %p\n", testGlob, &testGlob);
     // compute the elapsed time
     stop = get_seconds();
     printf("Elapsed time = %f seconds.\n", stop - start);
