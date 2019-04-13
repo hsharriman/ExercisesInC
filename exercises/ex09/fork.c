@@ -4,7 +4,15 @@ Copyright 2016 Allen B. Downey
 License: MIT License https://opensource.org/licenses/MIT
 
 */
+/*2. It appears as though each child process received a copy of the global, stack,
+and heap segments. When a child process is initialized, the values of the variables
+created in the parent process are the same in the child process and the parent process.
+However, when the child MODIFIES any of these variables (in the stack, heap, or global
+segments), these changes are not communicated to the parent process. Additionally, each
+child process cannot see changes that another child process makes to the variables in the
+stack, global, or heap segments.
 
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -76,14 +84,17 @@ int main(int argc, char *argv[])
         /* see if we're the parent or the child */
         if (pid == 0) {
           //If we get here, then this is the child process
+            printf("before changing, child %d, testStack = %d, stack addr %p.\n", i, testStack, &testStack);
             testStack = 40 + i;
-            printf("for child %d, testStack = %d, stack addr %p.\n", i, testStack, &testStack);
+            printf("for child %d, testStack = %d, address = %p.\n\n", i, testStack, &testStack);
 
+            printf("before changing, child %d, testHeap = %d, address = %p.\n", i, *testHeap, testHeap);
             *testHeap = 10 + i;
-            printf("for child %d, value of testHeap = %d, address = %p\n", i, *testHeap, testHeap);
+            printf("for child %d, value of testHeap = %d, address = %p\n\n", i, *testHeap, testHeap);
 
+            printf("before changing, child %d, testGlob = %d, address = %p.\n", i, testGlob, &testGlob);
             testGlob = 100 + i;
-            printf("for child %d, value of testGlob = %d, address = %p\n", i, testGlob, &testGlob);
+            printf("for child %d, val of testGlob = %d, address = %p\n\n", i, testGlob, &testGlob);
             child_code(i);
             exit(i);
         }
