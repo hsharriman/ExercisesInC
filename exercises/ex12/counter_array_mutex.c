@@ -4,10 +4,15 @@ Copyright 2014 Allen Downey
 License: GNU GPLv3
 
 */
+/* 4. time for counter_array: 0.49s (real), 0.004s (sys) versus
+      time for counter_array_mutex: .350s(real), .340s (sys)
+      quite a bit of overhead!
 
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include "mutex.h"
 
 #define NUM_CHILDREN 2
 
@@ -30,6 +35,7 @@ typedef struct {
     int counter;
     int end;
     int *array;
+    Mutex* mutex;
 } Shared;
 
 Shared *make_shared(int end)
@@ -43,6 +49,7 @@ Shared *make_shared(int end)
     shared->array = check_malloc(shared->end * sizeof(int));
     for (i=0; i<shared->end; i++) {
         shared->array[i] = 0;
+    shared->mutex = make_mutex();
     }
     return shared;
 }
@@ -69,10 +76,13 @@ void join_thread(pthread_t thread)
 
 void child_code(Shared *shared)
 {
+    mutex_lock(shared->mutex);
     // printf("Starting child at counter %d\n", shared->counter);
-
+    mutex_unlock(shared->mutex);
     while (1) {
+        mutex_lock(shared->mutex);
         if (shared->counter >= shared->end) {
+            mutex_unlock(shared->mutex);
             return;
         }
         shared->array[shared->counter]++;
@@ -81,6 +91,7 @@ void child_code(Shared *shared)
         if (shared->counter % 10000 == 0) {
             // printf("%d\n", shared->counter);
         }
+        mutex_unlock(shared->mutex);
     }
 }
 

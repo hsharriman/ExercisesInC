@@ -5,11 +5,20 @@ License: GNU GPLv3
 
 */
 
+/*2. After running and re-running the code multiple times the final counter
+appears to always be correct (though it seems as though that is only by chance)
+  3. Evidence that the threads are running concurrently:
+    - When the child code runs and prints the current value of the counter,
+    the counter does not appear to linearly increase. Sometimes it is 0 multiple
+    times, sometimes it jumps from 0 to 3 and back to 0, etc.
+    This is also an issue with synchronization, even though the final value of
+    the counter is correct the intermediate values are not.
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 
-#define NUM_CHILDREN 5
+#define NUM_CHILDREN 10
 
 /* Print an error message and exit.
 */
