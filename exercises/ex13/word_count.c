@@ -14,6 +14,7 @@ Note: this version leaks memory.
 #include <stdlib.h>
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <string.h>
 
 /* Represents a word-frequency pair. */
 typedef struct {
@@ -49,7 +50,7 @@ void accumulator(gpointer key, gpointer value, gpointer user_data)
 {
     GSequence *seq = (GSequence *) user_data;
     Pair *pair = g_new(Pair, 1);
-    pair->word = (gchar *) key;
+    pair->word = g_strdup((gchar *) key);
     pair->freq = *(gint *) value;
 
     g_sequence_insert_sorted(seq,
@@ -66,10 +67,24 @@ void incr(GHashTable* hash, gchar *key)
     if (val == NULL) {
         gint *val1 = g_new(gint, 1);
         *val1 = 1;
-        g_hash_table_insert(hash, key, val1);
+        gchar *key1 = g_strdup(key);
+        g_hash_table_insert(hash, key1, val1);
+
     } else {
         *val += 1;
     }
+}
+
+void hash_entry_free(gpointer key, gpointer value, gpointer user_data){
+  g_free(key);
+  g_free(value);
+}
+
+void pair_free(gpointer value, gpointer user_data)
+{
+    Pair *pair = (Pair *) value;
+    g_free(pair->word);
+    g_free(pair);
 }
 
 int main(int argc, char** argv)
@@ -104,6 +119,11 @@ int main(int argc, char** argv)
         for (int i=0; array[i] != NULL; i++) {
             incr(hash, array[i]);
         }
+        // g_strfreev(array); <-- this does the same thing in one line
+        for (int i=0; array[i]!= NULL; i++){
+          g_free(array[i]);
+        }
+        g_free(array);
     }
     fclose(fp);
 
@@ -113,9 +133,11 @@ int main(int argc, char** argv)
     // iterate the hash table and build the sequence
     GSequence *seq = g_sequence_new(NULL);
     g_hash_table_foreach(hash, (GHFunc) accumulator, (gpointer) seq);
+    g_hash_table_foreach(hash, (GHFunc) hash_entry_free, (gpointer) seq);
 
     // iterate the sequence and print the pairs
     g_sequence_foreach(seq, (GFunc) pair_printor, NULL);
+    g_sequence_foreach(seq, (GFunc) pair_free, NULL);
 
     // try (unsuccessfully) to free everything
     g_hash_table_destroy(hash);
